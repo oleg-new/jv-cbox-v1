@@ -5,9 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class JvCboxV1Application {
-
-	public static void main(String[] args) {
-		SpringApplication.run(JvCboxV1Application.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(JvCboxV1Application.class, args);
+    }
 
 }
