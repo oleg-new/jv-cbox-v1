@@ -2,10 +2,14 @@ package com.olegnew.jvcboxv1.controller;
 
 import com.olegnew.jvcboxv1.dto.UserRequestDto;
 import com.olegnew.jvcboxv1.dto.UserResponseDto;
+import com.olegnew.jvcboxv1.model.Role;
 import com.olegnew.jvcboxv1.model.User;
+import com.olegnew.jvcboxv1.service.RoleService;
 import com.olegnew.jvcboxv1.service.UserService;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final ModelMapper modelMapper;
     private final UserService userService;
+    private final RoleService roleService;
 
     @GetMapping("/")
     public List<UserResponseDto> getAllUsers() {
@@ -42,6 +47,9 @@ public class UserController {
 
     @PostMapping("/add")
     public UserResponseDto add(@RequestBody @Valid UserRequestDto userRequestDto) {
+        userRequestDto.setRoles(userRequestDto.getRoles().stream()
+                .map(r -> roleService.findRoleByRoleName(r.getRoleName()))
+                .collect(Collectors.toSet()));
         User user = userService.add(modelMapper.map(userRequestDto, User.class));
         return modelMapper.map(user, UserResponseDto.class);
     }
@@ -52,5 +60,18 @@ public class UserController {
         User user = modelMapper.map(userRequestDto, User.class);
         user.setId(id);
         return modelMapper.map(userService.update(user), UserResponseDto.class);
+    }
+
+    @GetMapping("/inject")
+    public User inject() {
+        Role testRole2 = roleService.findRoleByRoleName(Role.RoleName.USER);
+        Set setRoles = new HashSet<>();
+        setRoles.add(testRole2);
+        User testUser = new User();
+        testUser.setName("User");
+        testUser.setPassword("admin");
+        testUser.setRoles(setRoles);
+        testUser.setLocked(false);
+        return userService.add(testUser);
     }
 }
