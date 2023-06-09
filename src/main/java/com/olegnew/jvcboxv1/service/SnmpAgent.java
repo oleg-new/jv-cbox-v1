@@ -1,6 +1,8 @@
 package com.olegnew.jvcboxv1.service;
 
 import java.io.IOException;
+
+import com.olegnew.jvcboxv1.model.cbox.DefaultDevice;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
@@ -85,5 +87,6 @@ public class SnmpAgent {
         } catch (IOException e) {
             System.out.println(e.toString());
         }
+        System.out.println(DefaultDevice.getInstance().getListOfDefaultValues());
     }
 }

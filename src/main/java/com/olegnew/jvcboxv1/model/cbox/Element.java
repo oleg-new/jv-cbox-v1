@@ -4,11 +4,19 @@ import javax.persistence.Embeddable;
 import lombok.Data;
 
 @Data
-@Embeddable
 public class Element {
-    //@Schema(description = "")
     private String oid;
     private String name;
     private boolean rewritable;
     private boolean usability;
+
+    @Override
+    public String toString() {
+        return "Element{"
+                + "oid='" + oid + '\n'
+                + "name='" + name + '\n'
+                + "rewritable=" + rewritable + '\n'
+                + "usability=" + usability+ '\n'
+                + '}';
+    }
 }
