@@ -5,15 +5,17 @@ import java.util.List;
 
 public class DefaultDevice {
     private static DefaultDevice instance;
-    public List<Element> listOfDefaultValues;
-    private DefaultDevice(){
+    private List<Element> listOfDefaultValues;
+
+    private DefaultDevice() {
         listOfDefaultValues = createDefaultList();
     }
 
     public List<Element> getListOfDefaultValues() {
         return listOfDefaultValues;
     }
-    public static synchronized DefaultDevice getInstance(){
+
+    public static synchronized DefaultDevice getInstance() {
         if (instance == null) {
             instance = new DefaultDevice();
         }
@@ -21,12 +23,13 @@ public class DefaultDevice {
     }
 
     private List<Element> createDefaultList() {
-        List<Element> resultList = new ArrayList<>();
         Element element = new Element();
         element.setOid("1.3.6.1.4.1.17484.2.1.1.0");
         element.setName("SystemName");
         element.setUsability(false);
         element.setRewritable(false);
+
+        List<Element> resultList = new ArrayList<>();
         resultList.add(element);
 
         Element element1 = new Element();

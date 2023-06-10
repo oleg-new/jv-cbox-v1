@@ -1,8 +1,7 @@
 package com.olegnew.jvcboxv1.service;
 
-import java.io.IOException;
-
 import com.olegnew.jvcboxv1.model.cbox.DefaultDevice;
+import java.io.IOException;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;

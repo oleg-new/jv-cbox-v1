@@ -1,6 +1,5 @@
 package com.olegnew.jvcboxv1.model.cbox;
 
-import javax.persistence.Embeddable;
 import lombok.Data;
 
 @Data
@@ -16,7 +15,7 @@ public class Element {
                 + "oid='" + oid + '\n'
                 + "name='" + name + '\n'
                 + "rewritable=" + rewritable + '\n'
-                + "usability=" + usability+ '\n'
+                + "usability=" + usability + '\n'
                 + '}';
     }
 }

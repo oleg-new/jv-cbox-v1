@@ -40,13 +40,13 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserResponseDto getById(@PathVariable String id) {
+    public UserResponseDto getById(@Valid @PathVariable String id) {
         Optional<User> user = userService.getById(id);
         return modelMapper.map(user.get(), UserResponseDto.class);
     }
 
     @PostMapping("/add")
-    public UserResponseDto add(@RequestBody @Valid UserRequestDto userRequestDto) {
+    public UserResponseDto add(@Valid @RequestBody UserRequestDto userRequestDto) {
         userRequestDto.setRoles(userRequestDto.getRoles().stream()
                 .map(r -> roleService.findRoleByRoleName(r.getRoleName()))
                 .collect(Collectors.toSet()));
@@ -55,7 +55,7 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    public UserResponseDto update(@PathVariable Long id,
+    public UserResponseDto update(@Valid @PathVariable Long id,
                                   @RequestBody UserRequestDto userRequestDto) {
         User user = modelMapper.map(userRequestDto, User.class);
         user.setId(id);
