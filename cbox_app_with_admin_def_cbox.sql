@@ -24,25 +24,30 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `cbox_app` /*!40100 DEFAULT CHARACTER S
 USE `cbox_app`;
 
 --
--- Table structure for table `cbox_mib`
+-- Table structure for table `cbox`
 --
 
-DROP TABLE IF EXISTS `cbox_mib`;
+DROP TABLE IF EXISTS `cbox`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cbox_mib` (
+CREATE TABLE `cbox` (
   `id` bigint NOT NULL AUTO_INCREMENT,
+  `house` varchar(255) DEFAULT NULL,
+  `ip_address` varchar(255) DEFAULT NULL,
+  `snmp_community` varchar(255) DEFAULT NULL,
+  `street` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `cbox_mib`
+-- Dumping data for table `cbox`
 --
 
-LOCK TABLES `cbox_mib` WRITE;
-/*!40000 ALTER TABLE `cbox_mib` DISABLE KEYS */;
-/*!40000 ALTER TABLE `cbox_mib` ENABLE KEYS */;
+LOCK TABLES `cbox` WRITE;
+/*!40000 ALTER TABLE `cbox` DISABLE KEYS */;
+INSERT INTO `cbox` VALUES (1,'0','192.168.0.10','public','Default');
+/*!40000 ALTER TABLE `cbox` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -56,7 +61,7 @@ CREATE TABLE `roles` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `role_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -65,7 +70,7 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` VALUES (1,'ADMIN'),(2,'OPERATOR'),(3,'USER');
+INSERT INTO `roles` VALUES (1,'ADMIN'),(2,'USER'),(3,'OPERATOR');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -82,7 +87,7 @@ CREATE TABLE `users` (
   `name` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -91,7 +96,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,_binary '\0','Admin','$2a$10$.IC1lcJ84ekx6crltfEgAe.mF.iDCREsptbdVR70EfslpjIg92SVa');
+INSERT INTO `users` VALUES (1,_binary '\0','Admin','$2a$10$H6EYsuZcMno7GTTObDBJG.yF0q8HwMKa1HUvTx7Zm9jQ/igCOddWS');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -106,10 +111,8 @@ CREATE TABLE `users_roles` (
   `user_id` bigint NOT NULL,
   `role_id` bigint NOT NULL,
   PRIMARY KEY (`user_id`,`role_id`),
-  KEY `FKj6m8fwv7oqv74fcehir1a9ffy` (`role_id`),
-  CONSTRAINT `FK2o0jvgh89lemvvo17cbqvdxaa` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `FKj6m8fwv7oqv74fcehir1a9ffy` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `FKj6m8fwv7oqv74fcehir1a9ffy` (`role_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -118,7 +121,7 @@ CREATE TABLE `users_roles` (
 
 LOCK TABLES `users_roles` WRITE;
 /*!40000 ALTER TABLE `users_roles` DISABLE KEYS */;
-INSERT INTO `users_roles` VALUES (1,1);
+INSERT INTO `users_roles` VALUES (1,1),(1,2),(1,3);
 /*!40000 ALTER TABLE `users_roles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -131,4 +134,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-06-02 18:02:03
+-- Dump completed on 2023-06-11 13:18:30

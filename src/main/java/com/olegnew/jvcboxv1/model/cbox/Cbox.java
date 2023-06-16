@@ -17,5 +17,6 @@ public class Cbox {
     private String street;
     private String house;
     private String ipAddress;
+    private String snmpCommunity;
 }
 

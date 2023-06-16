@@ -2,14 +2,12 @@ package com.olegnew.jvcboxv1.controller;
 
 import com.olegnew.jvcboxv1.dto.UserRequestDto;
 import com.olegnew.jvcboxv1.dto.UserResponseDto;
-import com.olegnew.jvcboxv1.model.Role;
 import com.olegnew.jvcboxv1.model.User;
 import com.olegnew.jvcboxv1.service.RoleService;
 import com.olegnew.jvcboxv1.service.UserService;
-import java.util.HashSet;
+import com.olegnew.jvcboxv1.service.cbox.CboxService;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -62,16 +60,4 @@ public class UserController {
         return modelMapper.map(userService.update(user), UserResponseDto.class);
     }
 
-    @GetMapping("/inject")
-    public User inject() {
-        Role testRole2 = roleService.findRoleByRoleName(Role.RoleName.USER);
-        Set setRoles = new HashSet<>();
-        setRoles.add(testRole2);
-        User testUser = new User();
-        testUser.setName("User");
-        testUser.setPassword("admin");
-        testUser.setRoles(setRoles);
-        testUser.setLocked(false);
-        return userService.add(testUser);
-    }
 }
