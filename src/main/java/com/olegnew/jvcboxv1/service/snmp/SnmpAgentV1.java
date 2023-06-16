@@ -62,14 +62,15 @@ public class SnmpAgentV1 {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            if (event != null) {
+            if (event != null && event.getPeerAddress() != null) {
                 String valluev = event.getResponse()
                         .get(0)
                         .getVariable()
                         .toString();
-                System.out.println(valluev);
                 hashMapResult.put(current.getName(), valluev);
                 pdu.clear();
+            } else {
+                break;
             }
         }
         try {
@@ -89,4 +90,9 @@ public class SnmpAgentV1 {
         }
         return hashMapResult;
     }
+
+    private boolean checkConnection(String address) {
+        return true;
+    }
+
 }

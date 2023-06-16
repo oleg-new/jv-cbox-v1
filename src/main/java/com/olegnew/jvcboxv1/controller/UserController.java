@@ -5,7 +5,6 @@ import com.olegnew.jvcboxv1.dto.UserResponseDto;
 import com.olegnew.jvcboxv1.model.User;
 import com.olegnew.jvcboxv1.service.RoleService;
 import com.olegnew.jvcboxv1.service.UserService;
-import com.olegnew.jvcboxv1.service.cbox.CboxService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
