@@ -26,31 +26,14 @@ public class SnmpAgentV1 {
     private static final int SNMP_RETRIES = 3;
     private static final int SNMP_PORT = 161;
     private static final long SNMP_TIMEOUT = 1000L;
-    private HashMap<String, String> hashMapResult = new HashMap<>();
     private Snmp snmp = null;
     private TransportMapping transport = null;
 
     public HashMap<String, String> getTarget(String address,
                                              List<Element> elementList,
                                              String community) {
-        CommunityTarget target = new CommunityTarget();
-        UdpAddress targetAddress = new UdpAddress();
-        try {
-            targetAddress.setInetAddress(InetAddress.getByName(address));
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-        targetAddress.setPort(SNMP_PORT);
-        target.setAddress(targetAddress);
-        target.setCommunity(new OctetString(community));
-        target.setVersion(SnmpConstants.version1);
-        try {
-            transport = new DefaultUdpTransportMapping();
-            snmp = new Snmp(transport);
-            transport.listen();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        HashMap<String, String> hashMapResult = new HashMap<>();
+        CommunityTarget target = openConnection(address, community);
         PDU pdu = new PDU();
         pdu.setType(PDU.GET);
         ResponseEvent event = null;
@@ -73,6 +56,43 @@ public class SnmpAgentV1 {
                 break;
             }
         }
+        closeConnection();
+        return hashMapResult;
+    }
+
+    public boolean setOptionsByName(String address,
+                                     String community,
+                                     String name,
+                                     String value) {
+
+        openConnection(address,community);
+        closeConnection();
+        return true;
+    }
+
+    private CommunityTarget openConnection(String address, String community) {
+        CommunityTarget target = new CommunityTarget();
+        UdpAddress targetAddress = new UdpAddress();
+        try {
+            targetAddress.setInetAddress(InetAddress.getByName(address));
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        targetAddress.setPort(SNMP_PORT);
+        target.setAddress(targetAddress);
+        target.setCommunity(new OctetString(community));
+        target.setVersion(SnmpConstants.version1);
+        try {
+            transport = new DefaultUdpTransportMapping();
+            snmp = new Snmp(transport);
+            transport.listen();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return target;
+    }
+
+    private void closeConnection() {
         try {
             try {
                 if (transport != null) {
@@ -88,7 +108,6 @@ public class SnmpAgentV1 {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return hashMapResult;
     }
 
     private boolean checkConnection(String address) {
