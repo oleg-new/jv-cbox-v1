@@ -4,6 +4,7 @@ import com.olegnew.jvcboxv1.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -26,14 +28,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("login").permitAll()
-                .antMatchers("/v1/user/inject").permitAll()
-                .antMatchers(HttpMethod.GET, "/v1/user").hasAnyRole("ADMIN", "USER")
+                .antMatchers(HttpMethod.GET, "/v1/user/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/v1/user/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/v1/cbox/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers(HttpMethod.POST, "/v1/cbox/**").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .permitAll()
                 .and()
-                .httpBasic();
+                .httpBasic()
+                .and()
+                .csrf().disable();
     }
 
     @Bean

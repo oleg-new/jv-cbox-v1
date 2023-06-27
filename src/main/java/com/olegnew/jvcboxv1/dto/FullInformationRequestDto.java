@@ -4,8 +4,7 @@ import java.util.HashMap;
 import lombok.Data;
 
 @Data
-public class FullInformationDto {
-    private Long id;
+public class FullInformationRequestDto {
     private String street;
     private String house;
     private HashMap<String, String> receivedInformation;

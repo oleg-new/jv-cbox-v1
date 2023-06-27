@@ -15,4 +15,6 @@ public interface CboxService {
     Optional<Cbox> findCboxByStreetAndHouse(String street, String house);
 
     FullInformation getFullInformation(String id);
+
+    FullInformation updateById(Long id, FullInformation fullInformation);
 }

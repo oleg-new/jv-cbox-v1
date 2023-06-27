@@ -20,7 +20,6 @@ public class CboxServiceImpl implements CboxService {
     private final FullInformation fullInformation;
     @Autowired
     private SnmpAgentV1 snmpAgentV1;
-    private Cbox cbox;
 
     @Override
     public List<Cbox> getAllCboxs() {
@@ -44,6 +43,7 @@ public class CboxServiceImpl implements CboxService {
 
     @Override
     public FullInformation getFullInformation(String id) {
+        Cbox cbox;
         cbox = cboxRepository.findById(Long.valueOf(id)).get();
         fullInformation.setId(cbox.getId());
         fullInformation.setHouse(cbox.getHouse());
@@ -53,5 +53,28 @@ public class CboxServiceImpl implements CboxService {
                 cbox.getSnmpCommunity());
         fullInformation.setReceivedInformation(target);
         return fullInformation;
+    }
+
+    @Override
+    public FullInformation updateById(Long id, FullInformation fullInformation) {
+        boolean rebootRequired = false;
+        String currentAddress;
+        Cbox cbox = cboxRepository.findById(id).get();
+        cbox.setHouse(fullInformation.getHouse());
+        cbox.setStreet(fullInformation.getStreet());
+        if (fullInformation.getReceivedInformation().containsKey("SysIPaddress")) {
+            currentAddress = cbox.getIpAddress();
+            cbox.setIpAddress(fullInformation.getReceivedInformation().get("SysIPaddress"));
+            rebootRequired = true;
+        }
+        if (fullInformation.getReceivedInformation().containsKey("SysSnmpRdComm")) {
+            cbox.setSnmpCommunity(fullInformation.getReceivedInformation().get("SysSnmpRdComm"));
+        }
+        FullInformation fullInformationResult = snmpAgentV1
+                .setFullInformationOnTheDevice(fullInformation,
+                DefaultDevice.getInstance().getListOfDefaultValues());
+        cboxRepository.save(cbox);
+
+        return fullInformationResult;
     }
 }
