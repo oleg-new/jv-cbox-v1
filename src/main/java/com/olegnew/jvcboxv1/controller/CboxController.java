@@ -6,14 +6,19 @@ import com.olegnew.jvcboxv1.dto.FullInformationResponseDto;
 import com.olegnew.jvcboxv1.model.cbox.Cbox;
 import com.olegnew.jvcboxv1.model.cbox.FullInformation;
 import com.olegnew.jvcboxv1.service.cbox.CboxService;
+
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,16 +41,31 @@ public class CboxController {
 
     @GetMapping("/{id}")
     public FullInformationResponseDto getById(@PathVariable String id) {
-        return modelMapper.map(cboxService.getFullInformation(id),
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // only the OERATOR can get information about the "community"
+        boolean hasOPERATORRole = authentication.getAuthorities().stream()
+                .anyMatch(r -> r.getAuthority().equals("ROLE_OPERATOR"));
+        System.out.println(hasOPERATORRole);
+        return modelMapper.map(cboxService.getFullInformation(id, hasOPERATORRole),
                 FullInformationResponseDto.class);
     }
 
-    @PutMapping("/update/{id}")
-    public FullInformationResponseDto update(@Valid @PathVariable Long id,
+    @PatchMapping("/update/{id}")
+    public FullInformationResponseDto update(@Valid @PathVariable String id,
                                              @RequestBody FullInformationRequestDto
                                                      fullInformationRequestDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // only the OERATOR can get information about the "community"
+        boolean hasOPERATORRole = authentication.getAuthorities().stream()
+                .anyMatch(r -> r.getAuthority().equals("ROLE_OPERATOR"));
         cboxService.updateById(id, modelMapper.map(fullInformationRequestDto,
                 FullInformation.class));
-        return new FullInformationResponseDto();
+        return modelMapper.map(cboxService.getFullInformation(id, hasOPERATORRole),
+                FullInformationResponseDto.class);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        cboxService.delete(id);
     }
 }

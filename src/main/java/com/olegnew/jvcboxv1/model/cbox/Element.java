@@ -6,6 +6,7 @@ import lombok.Data;
 public class Element {
     private String oid;
     private String name;
+    private String dataType;
     private boolean rewritable;
     private boolean usability;
 

@@ -42,7 +42,7 @@ public class CboxServiceImpl implements CboxService {
     }
 
     @Override
-    public FullInformation getFullInformation(String id) {
+    public FullInformation getFullInformation(String id, boolean hasOPERATORRole) {
         Cbox cbox;
         cbox = cboxRepository.findById(Long.valueOf(id)).get();
         fullInformation.setId(cbox.getId());
@@ -56,25 +56,45 @@ public class CboxServiceImpl implements CboxService {
     }
 
     @Override
-    public FullInformation updateById(Long id, FullInformation fullInformation) {
+    public FullInformation updateById(String id, FullInformation fullInformation) {
         boolean rebootRequired = false;
         String currentAddress;
-        Cbox cbox = cboxRepository.findById(id).get();
-        cbox.setHouse(fullInformation.getHouse());
-        cbox.setStreet(fullInformation.getStreet());
+        Cbox cbox = cboxRepository.findById(Long.parseLong(id)).get();
+        if (fullInformation.getHouse() != null) {
+            cbox.setHouse(fullInformation.getHouse());
+        }
+        if (fullInformation.getStreet() !=null) {
+            cbox.setStreet(fullInformation.getStreet());
+        }
         if (fullInformation.getReceivedInformation().containsKey("SysIPaddress")) {
             currentAddress = cbox.getIpAddress();
             cbox.setIpAddress(fullInformation.getReceivedInformation().get("SysIPaddress"));
             rebootRequired = true;
+        } else {
+            fullInformation.getReceivedInformation().put("SysIPaddress", cbox.getIpAddress());
         }
         if (fullInformation.getReceivedInformation().containsKey("SysSnmpRdComm")) {
             cbox.setSnmpCommunity(fullInformation.getReceivedInformation().get("SysSnmpRdComm"));
+        } else {
+            fullInformation.getReceivedInformation().put("SysSnmpRdComm", cbox.getSnmpCommunity());
         }
-        FullInformation fullInformationResult = snmpAgentV1
+        snmpAgentV1
                 .setFullInformationOnTheDevice(fullInformation,
                 DefaultDevice.getInstance().getListOfDefaultValues());
+        rebootDevice(cbox.getIpAddress());
         cboxRepository.save(cbox);
 
-        return fullInformationResult;
+        return null;
     }
+
+    @Override
+    public void delete(Long id) {
+
+    }
+
+    @Override
+    public void rebootDevice(String iPaddress) {
+
+    }
+
 }

@@ -14,6 +14,7 @@ import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
@@ -47,11 +48,11 @@ public class SnmpAgentV1 {
                 throw new RuntimeException("Can't create event", e);
             }
             if (event != null && event.getPeerAddress() != null) {
-                String valluev = event.getResponse()
+                String responseValue = event.getResponse()
                         .get(0)
                         .getVariable()
                         .toString();
-                hashMapResult.put(current.getName(), valluev);
+                hashMapResult.put(current.getName(), responseValue);
                 pdu.clear();
             } else {
                 break;
@@ -71,15 +72,30 @@ public class SnmpAgentV1 {
         return true;
     }
 
-    public FullInformation setFullInformationOnTheDevice(FullInformation fullInformation,
+    public void setFullInformationOnTheDevice(FullInformation fullInformation,
                                                          List<Element> elementList) {
-        openConnection(fullInformation.getReceivedInformation().get("SysIPaddress"),
+        CommunityTarget target = openConnection(fullInformation.getReceivedInformation().get("SysIPaddress"),
                 fullInformation.getReceivedInformation().get("SysSnmpRdComm"));
         PDU pdu = new PDU();
         pdu.setType(PDU.SET);
         ResponseEvent event = null;
+        HashMap<String, String> receivedInformation = fullInformation.getReceivedInformation();
+        receivedInformation.forEach((k, v) -> {
+            System.out.println(k + " : " + v);
+            String oid = elementList.stream().filter(e -> e.getName().equals(k)).findFirst().get().getOid();
+            Integer vallueByName =  Integer.parseInt(fullInformation.getReceivedInformation().get(k));
+            VariableBinding variableBinding = new VariableBinding(new OID(oid));
+            variableBinding.setVariable(new Integer32(vallueByName));
 
-        return fullInformation;
+            pdu.add(variableBinding);
+            try {
+                System.out.println(snmp.set(pdu, target));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        });
+        closeConnection();
     }
 
     private CommunityTarget openConnection(String address, String community) {
@@ -125,5 +141,6 @@ public class SnmpAgentV1 {
     private boolean checkConnection(String address) {
         return true;
     }
+    //public void rebootCbox(String )
 
 }

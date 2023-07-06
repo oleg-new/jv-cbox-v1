@@ -15,5 +15,4 @@ public class UserRequestDto {
     @Size(min = 2, max = 64)
     private String password;
     private Set<Role> roles;
-
 }
