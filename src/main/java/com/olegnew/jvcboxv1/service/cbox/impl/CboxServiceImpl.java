@@ -42,7 +42,7 @@ public class CboxServiceImpl implements CboxService {
     }
 
     @Override
-    public FullInformation getFullInformation(String id, boolean hasOPERATORRole) {
+    public FullInformation getFullInformation(String id, boolean hasOperatorRole) {
         Cbox cbox;
         cbox = cboxRepository.findById(Long.valueOf(id)).get();
         fullInformation.setId(cbox.getId());
@@ -50,7 +50,7 @@ public class CboxServiceImpl implements CboxService {
         fullInformation.setStreet(cbox.getStreet());
         HashMap<String, String> target = snmpAgentV1.getTarget(cbox.getIpAddress(),
                 DefaultDevice.getInstance().getListOfDefaultValues(),
-                cbox.getSnmpCommunity());
+                cbox.getSnmpCommunity(), hasOperatorRole);
         fullInformation.setReceivedInformation(target);
         return fullInformation;
     }
@@ -63,7 +63,7 @@ public class CboxServiceImpl implements CboxService {
         if (fullInformation.getHouse() != null) {
             cbox.setHouse(fullInformation.getHouse());
         }
-        if (fullInformation.getStreet() !=null) {
+        if (fullInformation.getStreet() != null) {
             cbox.setStreet(fullInformation.getStreet());
         }
         if (fullInformation.getReceivedInformation().containsKey("SysIPaddress")) {
@@ -84,7 +84,7 @@ public class CboxServiceImpl implements CboxService {
         rebootDevice(cbox.getIpAddress());
         cboxRepository.save(cbox);
 
-        return null;
+        return getFullInformation(id, true);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class CboxServiceImpl implements CboxService {
     }
 
     @Override
-    public void rebootDevice(String iPaddress) {
+    public void rebootDevice(String ipAddress) {
 
     }
 

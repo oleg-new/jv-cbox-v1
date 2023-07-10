@@ -14,10 +14,11 @@ public interface CboxService {
 
     Optional<Cbox> findCboxByStreetAndHouse(String street, String house);
 
-    FullInformation getFullInformation(String id, boolean hasOPERATORRole);
+    FullInformation getFullInformation(String id, boolean hasOperatorRole);
 
     FullInformation updateById(String id, FullInformation fullInformation);
 
     void delete(Long id);
-    void rebootDevice(String iPaddress);
+
+    void rebootDevice(String ipAddress);
 }

@@ -20,6 +20,7 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.snmp4j.uri.SnmpUriResponse;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,7 +34,7 @@ public class SnmpAgentV1 {
 
     public HashMap<String, String> getTarget(String address,
                                              List<Element> elementList,
-                                             String community) {
+                                             String community, boolean hasOperatorRole) {
         HashMap<String, String> hashMapResult = new HashMap<>();
         CommunityTarget target = openConnection(address, community);
         PDU pdu = new PDU();
@@ -52,6 +53,9 @@ public class SnmpAgentV1 {
                         .get(0)
                         .getVariable()
                         .toString();
+                if (!hasOperatorRole && current.getName().contains("Comm")) {
+                    continue;
+                }
                 hashMapResult.put(current.getName(), responseValue);
                 pdu.clear();
             } else {
@@ -74,27 +78,37 @@ public class SnmpAgentV1 {
 
     public void setFullInformationOnTheDevice(FullInformation fullInformation,
                                                          List<Element> elementList) {
-        CommunityTarget target = openConnection(fullInformation.getReceivedInformation().get("SysIPaddress"),
+        CommunityTarget target = openConnection(fullInformation
+                        .getReceivedInformation().get("SysIPaddress"),
                 fullInformation.getReceivedInformation().get("SysSnmpRdComm"));
-        PDU pdu = new PDU();
-        pdu.setType(PDU.SET);
-        ResponseEvent event = null;
+        SnmpUriResponse response;
+
         HashMap<String, String> receivedInformation = fullInformation.getReceivedInformation();
         receivedInformation.forEach((k, v) -> {
-            System.out.println(k + " : " + v);
-            String oid = elementList.stream().filter(e -> e.getName().equals(k)).findFirst().get().getOid();
-            Integer vallueByName =  Integer.parseInt(fullInformation.getReceivedInformation().get(k));
+            Element currentElement = elementList.stream()
+                    .filter(e -> e.getName().equals(k))
+                    .findFirst()
+                    .get();
+            String oid = currentElement.getOid();
             VariableBinding variableBinding = new VariableBinding(new OID(oid));
-            variableBinding.setVariable(new Integer32(vallueByName));
-
+            if (currentElement.getDataType().equals("Integer")) {
+                Integer vallueByName = Integer.parseInt(fullInformation.getReceivedInformation()
+                        .get(k));
+                variableBinding.setVariable(new Integer32(vallueByName));
+            } else {
+                String vallueByName = fullInformation.getReceivedInformation().get(k);
+                variableBinding.setVariable(new OctetString(vallueByName));
+            }
+            PDU pdu = new PDU();
+            pdu.setType(PDU.SET);
             pdu.add(variableBinding);
             try {
-                System.out.println(snmp.set(pdu, target));
+                ResponseEvent event = snmp.send(pdu, target);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
         });
+
         closeConnection();
     }
 

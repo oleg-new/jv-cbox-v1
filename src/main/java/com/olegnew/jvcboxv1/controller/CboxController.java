@@ -6,8 +6,6 @@ import com.olegnew.jvcboxv1.dto.FullInformationResponseDto;
 import com.olegnew.jvcboxv1.model.cbox.Cbox;
 import com.olegnew.jvcboxv1.model.cbox.FullInformation;
 import com.olegnew.jvcboxv1.service.cbox.CboxService;
-
-import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -43,10 +41,10 @@ public class CboxController {
     public FullInformationResponseDto getById(@PathVariable String id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // only the OERATOR can get information about the "community"
-        boolean hasOPERATORRole = authentication.getAuthorities().stream()
+        boolean hasOperatorRole = authentication.getAuthorities().stream()
                 .anyMatch(r -> r.getAuthority().equals("ROLE_OPERATOR"));
-        System.out.println(hasOPERATORRole);
-        return modelMapper.map(cboxService.getFullInformation(id, hasOPERATORRole),
+        System.out.println(hasOperatorRole);
+        return modelMapper.map(cboxService.getFullInformation(id, hasOperatorRole),
                 FullInformationResponseDto.class);
     }
 
@@ -56,11 +54,11 @@ public class CboxController {
                                                      fullInformationRequestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // only the OERATOR can get information about the "community"
-        boolean hasOPERATORRole = authentication.getAuthorities().stream()
+        boolean hasOperatorRole = authentication.getAuthorities().stream()
                 .anyMatch(r -> r.getAuthority().equals("ROLE_OPERATOR"));
         cboxService.updateById(id, modelMapper.map(fullInformationRequestDto,
                 FullInformation.class));
-        return modelMapper.map(cboxService.getFullInformation(id, hasOPERATORRole),
+        return modelMapper.map(cboxService.getFullInformation(id, hasOperatorRole),
                 FullInformationResponseDto.class);
     }
 
