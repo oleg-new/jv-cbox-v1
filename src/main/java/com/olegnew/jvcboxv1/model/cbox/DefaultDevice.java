@@ -5,7 +5,7 @@ import java.util.List;
 
 public class DefaultDevice {
     private static DefaultDevice instance;
-    private List<Element> listOfDefaultValues;
+    final private List<Element> listOfDefaultValues;
 
     private DefaultDevice() {
         listOfDefaultValues = createDefaultList();

@@ -7,6 +7,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import lombok.Data;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
@@ -15,12 +18,12 @@ import org.snmp4j.TransportMapping;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.Integer32;
+import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
-import org.snmp4j.uri.SnmpUriResponse;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -66,23 +69,11 @@ public class SnmpAgentV1 {
         return hashMapResult;
     }
 
-    public boolean setOptionsByName(String address,
-                                     String community,
-                                     String name,
-                                     String value) {
-
-        openConnection(address,community);
-        closeConnection();
-        return true;
-    }
-
     public void setFullInformationOnTheDevice(FullInformation fullInformation,
                                                          List<Element> elementList) {
         CommunityTarget target = openConnection(fullInformation
                         .getReceivedInformation().get("SysIPaddress"),
                 fullInformation.getReceivedInformation().get("SysSnmpRdComm"));
-        SnmpUriResponse response;
-
         HashMap<String, String> receivedInformation = fullInformation.getReceivedInformation();
         receivedInformation.forEach((k, v) -> {
             Element currentElement = elementList.stream()
@@ -91,13 +82,13 @@ public class SnmpAgentV1 {
                     .get();
             String oid = currentElement.getOid();
             VariableBinding variableBinding = new VariableBinding(new OID(oid));
+            String currentKey = fullInformation.getReceivedInformation().get(k);
             if (currentElement.getDataType().equals("Integer")) {
-                Integer vallueByName = Integer.parseInt(fullInformation.getReceivedInformation()
-                        .get(k));
-                variableBinding.setVariable(new Integer32(vallueByName));
+                variableBinding.setVariable(new Integer32(Integer.parseInt(currentKey)));
+            } else if (isItAnAddress(currentKey)) {
+                variableBinding.setVariable(new IpAddress(currentKey));
             } else {
-                String vallueByName = fullInformation.getReceivedInformation().get(k);
-                variableBinding.setVariable(new OctetString(vallueByName));
+                variableBinding.setVariable(new OctetString(currentKey));
             }
             PDU pdu = new PDU();
             pdu.setType(PDU.SET);
@@ -152,9 +143,18 @@ public class SnmpAgentV1 {
         }
     }
 
-    private boolean checkConnection(String address) {
-        return true;
+    private boolean isItAnAddress(String address) {
+        String regex = "^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\\.(?!$)|$)){4}$";
+        Pattern p = Pattern.compile(regex);
+
+        if (address == null)
+        {
+            return false;
+        }
+        Matcher m = p.matcher(address);
+        return m.matches();
     }
-    //public void rebootCbox(String )
+    public void rebootCbox(String ipAddress) {
+    }
 
 }
