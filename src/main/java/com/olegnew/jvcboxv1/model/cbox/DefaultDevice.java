@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultDevice {
+
     private static DefaultDevice instance;
-    final private List<Element> listOfDefaultValues;
+
+    private final List<Element> listOfDefaultValues;
 
     private DefaultDevice() {
         listOfDefaultValues = createDefaultList();

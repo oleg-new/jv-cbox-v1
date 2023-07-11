@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import lombok.Data;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
@@ -147,13 +146,13 @@ public class SnmpAgentV1 {
         String regex = "^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\\.(?!$)|$)){4}$";
         Pattern p = Pattern.compile(regex);
 
-        if (address == null)
-        {
+        if (address == null) {
             return false;
         }
         Matcher m = p.matcher(address);
         return m.matches();
     }
+
     public void rebootCbox(String ipAddress) {
     }
 
