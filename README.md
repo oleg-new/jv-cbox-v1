@@ -49,9 +49,9 @@ Spring MVC
 <li>
 Spring Data 
 <li>
-SNMP4J
-<li>
 Swagger
+<li>
+SNMP4J
 <li>
 Checkstyle plugin
 
