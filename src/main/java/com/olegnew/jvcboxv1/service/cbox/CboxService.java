@@ -10,7 +10,7 @@ public interface CboxService {
 
     Optional<Cbox> getById(String id);
 
-    Cbox add(Cbox cbox);
+    FullInformation add(FullInformation fullInformation);
 
     Optional<Cbox> findCboxByStreetAndHouse(String street, String house);
 

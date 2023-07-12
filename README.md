@@ -5,6 +5,27 @@
 A simple REST-API project that manages a Cbox slave. It is built on the principles of SOLID and uses create, read and other CRUD operations.
 ---
 
+### Technologies
+<li>
+Java 11
+<li>
+MySQL
+<li>
+Spring Boot
+<li>
+Spring Security
+<li>
+Spring MVC
+<li>
+Spring Data 
+<li>
+Swagger
+<li>
+SNMP4J
+<li>
+Checkstyle plugin
+
+----
 ### Features :
 <li>
 Authentication like a User
@@ -33,26 +54,5 @@ Data access layer (DAO)
 Application layer (services) all classes of the "Service" layer are covered with tests
 <li>
 Presentation layer (controllers)
-
-----
-### Technologies
-<li>
-Java 11
-<li>
-MySQL
-<li>
-Spring Boot
-<li>
-Spring Security
-<li>
-Spring MVC
-<li>
-Spring Data 
-<li>
-Swagger
-<li>
-SNMP4J
-<li>
-Checkstyle plugin
 
 ----

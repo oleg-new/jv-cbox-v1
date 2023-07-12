@@ -32,9 +32,16 @@ public class CboxServiceImpl implements CboxService {
     }
 
     @Override
-    public Cbox add(Cbox cbox) {
-        return cboxRepository.save(cbox);
+    public FullInformation add(FullInformation fullInformation) {
+        Cbox newCbox = new Cbox();
+        newCbox.setStreet(fullInformation.getStreet());
+        newCbox.setHouse(fullInformation.getHouse());
+        newCbox.setIpAddress(fullInformation.getReceivedInformation().get("SysIPaddress"));
+        newCbox.setSnmpCommunity(fullInformation.getReceivedInformation().get("SysSnmpWrComm"));
+        Cbox savedCbox = cboxRepository.save(newCbox);
+        return updateById(savedCbox.getId().toString(), fullInformation);
     }
+
 
     @Override
     public Optional<Cbox> findCboxByStreetAndHouse(String street, String house) {
