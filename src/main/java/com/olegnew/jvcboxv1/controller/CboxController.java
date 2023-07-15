@@ -45,15 +45,22 @@ public class CboxController {
         boolean hasOperatorRole = authentication.getAuthorities().stream()
                 .anyMatch(r -> r.getAuthority().equals("ROLE_OPERATOR"));
         System.out.println(hasOperatorRole);
-        return modelMapper.map(cboxService.getFullInformation(id, hasOperatorRole),
+        return modelMapper.map(cboxService.getFullInformation(Long.parseLong(id), hasOperatorRole),
                 FullInformationResponseDto.class);
     }
+
     @PostMapping("/add")
     public FullInformationResponseDto add(@RequestBody FullInformationRequestDto
-                                                      fullInformationRequestDto){
+                                                      fullInformationRequestDto) {
         FullInformation fullInformation = modelMapper.map(fullInformationRequestDto,
                 FullInformation.class);
         return modelMapper.map(cboxService.add(fullInformation),FullInformationResponseDto.class);
+    }
+
+    @PostMapping("/reboot")
+    public String reboot(@RequestBody String id) {
+        cboxService.rebootDevice(Long.parseLong(id));
+        return "Rebooting";
     }
 
     @PatchMapping("/update/{id}")
@@ -64,9 +71,9 @@ public class CboxController {
         // only the OERATOR can get information about the "community"
         boolean hasOperatorRole = authentication.getAuthorities().stream()
                 .anyMatch(r -> r.getAuthority().equals("ROLE_OPERATOR"));
-        cboxService.updateById(id, modelMapper.map(fullInformationRequestDto,
+        cboxService.updateById(Long.parseLong(id), modelMapper.map(fullInformationRequestDto,
                 FullInformation.class));
-        return modelMapper.map(cboxService.getFullInformation(id, hasOperatorRole),
+        return modelMapper.map(cboxService.getFullInformation(Long.parseLong(id), hasOperatorRole),
                 FullInformationResponseDto.class);
     }
 

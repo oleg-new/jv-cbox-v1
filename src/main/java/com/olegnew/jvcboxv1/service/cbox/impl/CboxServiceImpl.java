@@ -39,9 +39,8 @@ public class CboxServiceImpl implements CboxService {
         newCbox.setIpAddress(fullInformation.getReceivedInformation().get("SysIPaddress"));
         newCbox.setSnmpCommunity(fullInformation.getReceivedInformation().get("SysSnmpWrComm"));
         Cbox savedCbox = cboxRepository.save(newCbox);
-        return updateById(savedCbox.getId().toString(), fullInformation);
+        return updateById(savedCbox.getId(), fullInformation);
     }
-
 
     @Override
     public Optional<Cbox> findCboxByStreetAndHouse(String street, String house) {
@@ -49,9 +48,9 @@ public class CboxServiceImpl implements CboxService {
     }
 
     @Override
-    public FullInformation getFullInformation(String id, boolean hasOperatorRole) {
+    public FullInformation getFullInformation(Long id, boolean hasOperatorRole) {
         Cbox cbox;
-        cbox = cboxRepository.findById(Long.valueOf(id)).get();
+        cbox = cboxRepository.findById(id).get();
         fullInformation.setId(cbox.getId());
         fullInformation.setHouse(cbox.getHouse());
         fullInformation.setStreet(cbox.getStreet());
@@ -63,10 +62,10 @@ public class CboxServiceImpl implements CboxService {
     }
 
     @Override
-    public FullInformation updateById(String id, FullInformation fullInformation) {
+    public FullInformation updateById(Long id, FullInformation fullInformation) {
         boolean rebootRequired = false;
         String currentAddress;
-        Cbox cbox = cboxRepository.findById(Long.parseLong(id)).get();
+        Cbox cbox = cboxRepository.findById(id).get();
         if (fullInformation.getHouse() != null) {
             cbox.setHouse(fullInformation.getHouse());
         }
@@ -88,7 +87,7 @@ public class CboxServiceImpl implements CboxService {
         snmpAgentV1
                 .setFullInformationOnTheDevice(fullInformation,
                 DefaultDevice.getInstance().getListOfDefaultValues());
-        rebootDevice(cbox.getIpAddress());
+        rebootDevice(cbox.getId());
         cboxRepository.save(cbox);
 
         return getFullInformation(id, true);
@@ -100,8 +99,15 @@ public class CboxServiceImpl implements CboxService {
     }
 
     @Override
-    public void rebootDevice(String ipAddress) {
+    public boolean needToReboot(Long id, FullInformation fullInformation) {
 
+        return false;
+    }
+
+    @Override
+    public void rebootDevice(Long id) {
+        Cbox cbox = cboxRepository.getById(id);
+        snmpAgentV1.rebootCbox(cbox.getIpAddress(), cbox.getSnmpCommunity());
     }
 
 }

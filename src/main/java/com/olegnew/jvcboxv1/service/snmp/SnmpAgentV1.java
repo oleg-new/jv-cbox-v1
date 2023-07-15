@@ -81,6 +81,7 @@ public class SnmpAgentV1 {
                     .get();
             String oid = currentElement.getOid();
             VariableBinding variableBinding = new VariableBinding(new OID(oid));
+            OctetString s = OctetString.fromHexString("48:57:54:43:d0:bf:30:04");
             String currentKey = fullInformation.getReceivedInformation().get(k);
             if (currentElement.getDataType().equals("Integer")) {
                 variableBinding.setVariable(new Integer32(Integer.parseInt(currentKey)));
@@ -153,7 +154,20 @@ public class SnmpAgentV1 {
         return m.matches();
     }
 
-    public void rebootCbox(String ipAddress) {
+    public void rebootCbox(String ipAddress, String community) {
+        CommunityTarget communityTarget = openConnection(ipAddress, community);
+        String oid = "1.3.6.1.4.1.17484.2.1.11.0";
+        VariableBinding variableBinding = new VariableBinding(new OID(oid));
+        variableBinding.setVariable(OctetString.fromHexString("0F"));
+        PDU pdu = new PDU();
+        pdu.setType(PDU.SET);
+        pdu.add(variableBinding);
+        try {
+            ResponseEvent event = snmp.send(pdu, communityTarget);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        closeConnection();
     }
 
 }
