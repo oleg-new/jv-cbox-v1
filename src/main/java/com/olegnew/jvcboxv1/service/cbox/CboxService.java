@@ -16,7 +16,7 @@ public interface CboxService {
 
     FullInformation getFullInformation(Long id, boolean hasOperatorRole);
 
-    FullInformation updateById(Long id, FullInformation fullInformation);
+    FullInformation updateById(Long id, FullInformation fullInformation, boolean newNewDevice);
 
     void delete(Long id);
 

@@ -1,6 +1,7 @@
 package com.olegnew.jvcboxv1.model;
 
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,7 +22,7 @@ public class User {
     private String name;
     private String password;
     private boolean locked;
-    @ManyToMany
+    @ManyToMany (cascade = {CascadeType.ALL})
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))

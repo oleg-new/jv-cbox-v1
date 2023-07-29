@@ -72,7 +72,7 @@ public class CboxController {
         boolean hasOperatorRole = authentication.getAuthorities().stream()
                 .anyMatch(r -> r.getAuthority().equals("ROLE_OPERATOR"));
         cboxService.updateById(Long.parseLong(id), modelMapper.map(fullInformationRequestDto,
-                FullInformation.class));
+                FullInformation.class), false);
         return modelMapper.map(cboxService.getFullInformation(Long.parseLong(id), hasOperatorRole),
                 FullInformationResponseDto.class);
     }

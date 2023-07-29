@@ -33,13 +33,7 @@ public class CboxServiceImpl implements CboxService {
 
     @Override
     public FullInformation add(FullInformation fullInformation) {
-        Cbox newCbox = new Cbox();
-        newCbox.setStreet(fullInformation.getStreet());
-        newCbox.setHouse(fullInformation.getHouse());
-        newCbox.setIpAddress(fullInformation.getReceivedInformation().get("SysIPaddress"));
-        newCbox.setSnmpCommunity(fullInformation.getReceivedInformation().get("SysSnmpWrComm"));
-        Cbox savedCbox = cboxRepository.save(newCbox);
-        return updateById(savedCbox.getId(), fullInformation);
+        return updateById(1L, fullInformation, true);
     }
 
     @Override
@@ -62,32 +56,52 @@ public class CboxServiceImpl implements CboxService {
     }
 
     @Override
-    public FullInformation updateById(Long id, FullInformation fullInformation) {
-        boolean rebootRequired = false;
-        String currentAddress;
-        Cbox cbox = cboxRepository.findById(id).get();
+    public FullInformation updateById(Long id, FullInformation fullInformation,
+                                      boolean newNewDevice) {
+        boolean rebootRequired = newNewDevice;
+
+        Cbox cbox = new Cbox();
+        if (!newNewDevice) {
+            cbox = cboxRepository.findById(id).get();
+        } else {
+            Cbox defaultCbox = cboxRepository.findById(1L).get();
+            cbox.setIpAddress(defaultCbox.getIpAddress());
+            cbox.setSnmpCommunity(defaultCbox.getSnmpCommunity());
+        }
+        snmpAgentV1.setFullInformationOnTheDevice(cbox, fullInformation,
+                        DefaultDevice.getInstance().getListOfDefaultValues());
         if (fullInformation.getHouse() != null) {
             cbox.setHouse(fullInformation.getHouse());
         }
         if (fullInformation.getStreet() != null) {
             cbox.setStreet(fullInformation.getStreet());
         }
-        if (fullInformation.getReceivedInformation().containsKey("SysIPaddress")) {
-            currentAddress = cbox.getIpAddress();
-            cbox.setIpAddress(fullInformation.getReceivedInformation().get("SysIPaddress"));
+        if (fullInformation.getReceivedInformation().containsKey("SysIPaddress")
+                || fullInformation.getReceivedInformation().containsKey("SysIPmask")
+                || fullInformation.getReceivedInformation().containsKey("SysGateIPaddress")
+                || fullInformation.getReceivedInformation().containsKey("SysTrapIPaddress")
+                || fullInformation.getReceivedInformation().containsKey("SysSnmpAccess")
+                || fullInformation.getReceivedInformation().containsKey("SysSnmpRdComm")
+                || fullInformation.getReceivedInformation().containsKey("SysSnmpWrComm")
+                || fullInformation.getReceivedInformation().containsKey("SysSnmpTrapComm")) {
             rebootRequired = true;
-        } else {
-            fullInformation.getReceivedInformation().put("SysIPaddress", cbox.getIpAddress());
         }
-        if (fullInformation.getReceivedInformation().containsKey("SysSnmpRdComm")) {
-            cbox.setSnmpCommunity(fullInformation.getReceivedInformation().get("SysSnmpRdComm"));
-        } else {
-            fullInformation.getReceivedInformation().put("SysSnmpRdComm", cbox.getSnmpCommunity());
+        if (rebootRequired) {
+            if (newNewDevice) {
+                rebootDevice(1L);
+            } else {
+                rebootDevice(cbox.getId());
+
+            }
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-        snmpAgentV1
-                .setFullInformationOnTheDevice(fullInformation,
-                DefaultDevice.getInstance().getListOfDefaultValues());
-        rebootDevice(cbox.getId());
+        if (fullInformation.getReceivedInformation().containsKey("SysIPaddress")) {
+            cbox.setIpAddress(fullInformation.getReceivedInformation().get("SysIPaddress"));
+        }
         cboxRepository.save(cbox);
 
         return getFullInformation(id, true);

@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.validator.constraints.UniqueElements;
 
 @Data
 @Entity
@@ -19,6 +20,7 @@ public class Role {
     @Enumerated(value = EnumType.STRING)
     private RoleName roleName;
 
+    @UniqueElements
     public enum RoleName {
         ROLE_ADMIN,
         ROLE_OPERATOR,

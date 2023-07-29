@@ -1,5 +1,6 @@
 package com.olegnew.jvcboxv1.service.snmp;
 
+import com.olegnew.jvcboxv1.model.cbox.Cbox;
 import com.olegnew.jvcboxv1.model.cbox.Element;
 import com.olegnew.jvcboxv1.model.cbox.FullInformation;
 import java.io.IOException;
@@ -68,11 +69,9 @@ public class SnmpAgentV1 {
         return hashMapResult;
     }
 
-    public void setFullInformationOnTheDevice(FullInformation fullInformation,
-                                                         List<Element> elementList) {
-        CommunityTarget target = openConnection(fullInformation
-                        .getReceivedInformation().get("SysIPaddress"),
-                fullInformation.getReceivedInformation().get("SysSnmpRdComm"));
+    public void setFullInformationOnTheDevice(Cbox cbox, FullInformation fullInformation,
+                                              List<Element> elementList) {
+        CommunityTarget target = openConnection(cbox.getIpAddress(), cbox.getSnmpCommunity());
         HashMap<String, String> receivedInformation = fullInformation.getReceivedInformation();
         receivedInformation.forEach((k, v) -> {
             Element currentElement = elementList.stream()
@@ -81,7 +80,6 @@ public class SnmpAgentV1 {
                     .get();
             String oid = currentElement.getOid();
             VariableBinding variableBinding = new VariableBinding(new OID(oid));
-            OctetString s = OctetString.fromHexString("48:57:54:43:d0:bf:30:04");
             String currentKey = fullInformation.getReceivedInformation().get(k);
             if (currentElement.getDataType().equals("Integer")) {
                 variableBinding.setVariable(new Integer32(Integer.parseInt(currentKey)));
