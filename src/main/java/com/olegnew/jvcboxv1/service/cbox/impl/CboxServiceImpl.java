@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CboxServiceImpl implements CboxService {
     private final CboxRepository cboxRepository;
-    private final FullInformation fullInformation;
+
     @Autowired
     private SnmpAgentV1 snmpAgentV1;
 
@@ -43,8 +43,8 @@ public class CboxServiceImpl implements CboxService {
 
     @Override
     public FullInformation getFullInformation(Long id, boolean hasOperatorRole) {
-        Cbox cbox;
-        cbox = cboxRepository.findById(id).get();
+        FullInformation fullInformation = new FullInformation();
+        Cbox cbox = cboxRepository.findById(id).get();
         fullInformation.setId(cbox.getId());
         fullInformation.setHouse(cbox.getHouse());
         fullInformation.setStreet(cbox.getStreet());
@@ -79,20 +79,11 @@ public class CboxServiceImpl implements CboxService {
         if (fullInformation.getReceivedInformation().containsKey("SysIPaddress")
                 || fullInformation.getReceivedInformation().containsKey("SysIPmask")
                 || fullInformation.getReceivedInformation().containsKey("SysGateIPaddress")
-                || fullInformation.getReceivedInformation().containsKey("SysTrapIPaddress")
-                || fullInformation.getReceivedInformation().containsKey("SysSnmpAccess")
-                || fullInformation.getReceivedInformation().containsKey("SysSnmpRdComm")
-                || fullInformation.getReceivedInformation().containsKey("SysSnmpWrComm")
-                || fullInformation.getReceivedInformation().containsKey("SysSnmpTrapComm")) {
+                || fullInformation.getReceivedInformation().containsKey("SysTrapIPaddress")) {
             rebootRequired = true;
         }
         if (rebootRequired) {
-            if (newNewDevice) {
-                rebootDevice(1L);
-            } else {
-                rebootDevice(cbox.getId());
-
-            }
+            rebootDevice(cbox);
             try {
                 Thread.sleep(4000);
             } catch (InterruptedException e) {
@@ -104,24 +95,30 @@ public class CboxServiceImpl implements CboxService {
         }
         cboxRepository.save(cbox);
 
-        return getFullInformation(id, true);
+        return getFullInformation(cbox.getId(), true);
     }
 
     @Override
     public void delete(Long id) {
-
+        HashMap<String, String> receivedInformation = new HashMap<>();
+        receivedInformation.put("SysIPaddress","192.168.0.10");
+        receivedInformation.put("SysIPmask", "255.255.255.0");
+        receivedInformation.put("SysGateIPaddress", "192.168.0.1");
+        receivedInformation.put("SysTrapIPaddress", "192.168.0.1");
+        receivedInformation.put("SysSnmpRdComm", "public");
+        receivedInformation.put("SysSnmpWrComm", "public");
+        receivedInformation.put("SysSnmpTrapComm", "public");
+        FullInformation defaultInformation = new FullInformation();
+        defaultInformation.setReceivedInformation(receivedInformation);
+        Cbox cbox = cboxRepository.findById(id).get();
+        snmpAgentV1.setFullInformationOnTheDevice(cbox, defaultInformation,
+                DefaultDevice.getInstance().getListOfDefaultValues());
+        rebootDevice(cbox);
+        cboxRepository.delete(cbox);
     }
 
     @Override
-    public boolean needToReboot(Long id, FullInformation fullInformation) {
-
-        return false;
-    }
-
-    @Override
-    public void rebootDevice(Long id) {
-        Cbox cbox = cboxRepository.getById(id);
+    public void rebootDevice(Cbox cbox) {
         snmpAgentV1.rebootCbox(cbox.getIpAddress(), cbox.getSnmpCommunity());
     }
-
 }

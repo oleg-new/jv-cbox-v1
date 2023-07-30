@@ -40,14 +40,20 @@ public class SnmpAgentV1 {
                                              String community, boolean hasOperatorRole) {
         HashMap<String, String> hashMapResult = new HashMap<>();
         CommunityTarget target = openConnection(address, community);
+        //snmp = new Snmp();
         PDU pdu = new PDU();
         pdu.setType(PDU.GET);
         ResponseEvent event = null;
-
         for (Element current: elementList) {
             pdu.add(new VariableBinding(new OID(current.getOid())));
             try {
-                event = snmp.send(pdu, target, null);
+                //this loop is added to avoid missing the first request after a reboot.
+                for (int i = 0; i < 3; i++) {
+                    event = snmp.send(pdu, target, null);
+                    if (event != null && event.getPeerAddress() != null) {
+                        break;
+                    }
+                }
             } catch (IOException e) {
                 throw new RuntimeException("Can't create event", e);
             }
@@ -93,6 +99,9 @@ public class SnmpAgentV1 {
             pdu.add(variableBinding);
             try {
                 ResponseEvent event = snmp.send(pdu, target);
+                if (k.equals("SysSnmpWrComm")) {
+                    cbox.setSnmpCommunity(v);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

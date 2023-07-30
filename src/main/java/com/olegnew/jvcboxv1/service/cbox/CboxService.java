@@ -20,7 +20,5 @@ public interface CboxService {
 
     void delete(Long id);
 
-    boolean needToReboot(Long id, FullInformation fullInformation);
-
-    void rebootDevice(Long id);
+    void rebootDevice(Cbox cbox);
 }

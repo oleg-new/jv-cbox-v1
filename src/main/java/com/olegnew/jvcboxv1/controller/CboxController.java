@@ -59,7 +59,8 @@ public class CboxController {
 
     @PostMapping("/reboot")
     public String reboot(@RequestBody String id) {
-        cboxService.rebootDevice(Long.parseLong(id));
+        Cbox cbox = cboxService.getById(id).get();
+        cboxService.rebootDevice(cbox);
         return "Rebooting";
     }
 
