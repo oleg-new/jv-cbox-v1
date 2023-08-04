@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface CboxService {
     List<Cbox> getAllCboxs();
 
-    Optional<Cbox> getById(String id);
+    Optional<Cbox> getById(Long id);
 
     FullInformation add(FullInformation fullInformation);
 

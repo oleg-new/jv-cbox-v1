@@ -1,5 +1,6 @@
 package com.olegnew.jvcboxv1.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -18,8 +19,11 @@ import lombok.Data;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(example = "1")
     private Long id;
+    @ApiModelProperty(example = "Mars")
     private String name;
+    @ApiModelProperty(example = "very complex password")
     private String password;
     private boolean locked;
     @ManyToMany (cascade = {CascadeType.ALL})

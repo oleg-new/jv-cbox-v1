@@ -27,8 +27,8 @@ public class CboxServiceImpl implements CboxService {
     }
 
     @Override
-    public Optional<Cbox> getById(String id) {
-        return cboxRepository.findById(Long.valueOf(id));
+    public Optional<Cbox> getById(Long id) {
+        return cboxRepository.findById(id);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class CboxServiceImpl implements CboxService {
         boolean rebootRequired = newNewDevice;
 
         Cbox cbox = new Cbox();
-        if (!newNewDevice) {
+        if (!newNewDevice || id != 1L) {
             cbox = cboxRepository.findById(id).get();
         } else {
             Cbox defaultCbox = cboxRepository.findById(1L).get();
@@ -100,21 +100,23 @@ public class CboxServiceImpl implements CboxService {
 
     @Override
     public void delete(Long id) {
-        HashMap<String, String> receivedInformation = new HashMap<>();
-        receivedInformation.put("SysIPaddress","192.168.0.10");
-        receivedInformation.put("SysIPmask", "255.255.255.0");
-        receivedInformation.put("SysGateIPaddress", "192.168.0.1");
-        receivedInformation.put("SysTrapIPaddress", "192.168.0.1");
-        receivedInformation.put("SysSnmpRdComm", "public");
-        receivedInformation.put("SysSnmpWrComm", "public");
-        receivedInformation.put("SysSnmpTrapComm", "public");
-        FullInformation defaultInformation = new FullInformation();
-        defaultInformation.setReceivedInformation(receivedInformation);
-        Cbox cbox = cboxRepository.findById(id).get();
-        snmpAgentV1.setFullInformationOnTheDevice(cbox, defaultInformation,
-                DefaultDevice.getInstance().getListOfDefaultValues());
-        rebootDevice(cbox);
-        cboxRepository.delete(cbox);
+        if (id != 1L) {
+            HashMap<String, String> receivedInformation = new HashMap<>();
+            receivedInformation.put("SysIPaddress", "192.168.0.10");
+            receivedInformation.put("SysIPmask", "255.255.255.0");
+            receivedInformation.put("SysGateIPaddress", "192.168.0.1");
+            receivedInformation.put("SysTrapIPaddress", "192.168.0.1");
+            receivedInformation.put("SysSnmpRdComm", "public");
+            receivedInformation.put("SysSnmpWrComm", "public");
+            receivedInformation.put("SysSnmpTrapComm", "public");
+            FullInformation defaultInformation = new FullInformation();
+            defaultInformation.setReceivedInformation(receivedInformation);
+            Cbox cbox = cboxRepository.findById(id).get();
+            snmpAgentV1.setFullInformationOnTheDevice(cbox, defaultInformation,
+                    DefaultDevice.getInstance().getListOfDefaultValues());
+            rebootDevice(cbox);
+            cboxRepository.delete(cbox);
+        }
     }
 
     @Override

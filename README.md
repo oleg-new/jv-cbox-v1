@@ -1,10 +1,18 @@
-# Cbox-REST-API-Service
+# Cbox Manager 
+# REST-API-Service
+
 ---
 ### Project description:
 
-A simple REST-API project that manages a Cbox slave. It is built on the principles of SOLID and uses create, read and other CRUD operations.
+This application allows you to manage Cbox devices using the http protocol.
+The "[Ethernet Control Box](http://dlab.od.ua/ustrojstva-avtomatiki-monitoringa-i-signalizacii/#N2)" device is a multifunctional  device designed for protection, remote control of network equipment (switches, routers, modems, etc.) and control of various equipment.
+The Cbox is monitored and managed using the [SNMP](https://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) protocol.
 ---
+Данное  приложение позволяет управлять устройствами Cbox  использовать протокол http.
+Устройство "[Ethernet Control Box](http://dlab.od.ua/ustrojstva-avtomatiki-monitoringa-i-signalizacii/#N2)" это многофункциональное устройство предназначеное для охраны, удалённого контроля работоспособности сетевого оборудования (коммутаторы, маршрутизаторы, модемы и т.п.) и управления различным оборудованием.
+Контроль и управление Cbox осуществляется  помощью протокола [SNMP](https://ru.wikipedia.org/wiki/SNMP).
 
+---
 ### Technologies
 <li>
 Java 11
@@ -19,9 +27,9 @@ Spring MVC
 <li>
 Spring Data 
 <li>
-Swagger
-<li>
 SNMP4J
+<li>
+Swagger
 <li>
 Checkstyle plugin
 
