@@ -1,0 +1,24 @@
+databaseChangeLog:
+
+- include:
+    file: create_table/0001.Create_table_cbox.sql
+    relativeToChangelogFile: true
+- include:
+      file: create_table/0002.Create_table_users.sql
+      relativeToChangelogFile: true
+- include:
+      file: create_table/0003.Create_table_roles.sql
+      relativeToChangelogFile: true
+- include:
+      file: create_table/0004.Create_table_users_roles.sql
+      relativeToChangelogFile: true
+- include:
+    file: create_default_value/0002.create_default_user.sql
+    relativeToChangelogFile: true
+- include:
+    file: create_default_value/0003.create_default_cbox.sql
+    relativeToChangelogFile: true
+- include:
+    file: create_default_value/0001.create_roles.sql
+    relativeToChangelogFile: true
+
